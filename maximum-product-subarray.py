@@ -1,22 +1,37 @@
-def product(memo, i, j, nums):
-    if i == j:
-        return nums[i]
-    if (i, j) in memo:
-        return memo[(i, j)]
-    ans = product(memo, i+1, j, nums) * nums[i]
-    memo[(i,j)] = ans
-    return ans
+from typing import List
 
 class Solution:
     def maxProduct(self, nums: List[int]) -> int:
-        dp = [0] * len(nums)
-        memo = {}
+        ans = nums[0]
+        maxPositive = None
+        maxNegative = None
         for i in range(0, len(nums)):
-            if i == 0:
-                dp[i] = nums[i]
+            n = nums[i]
+            ans = max(ans, n)
+            if n == 0:
+                maxPositive = None
+                maxNegative = None
                 continue
-            ans = max(dp[i-1], nums[i])
-            for j in range(0, i):
-                ans = max(ans, product(memo, j, i, nums))
-            dp[i] = ans
-        return dp[-1]
+            if n > 0:
+                if maxPositive:
+                    maxPositive = maxPositive * n
+                    ans = max(ans, maxPositive)
+                else:
+                    maxPositive = n
+                if maxNegative:
+                    maxNegative = maxNegative * n
+            if n < 0:
+                if maxPositive:
+                    negative = maxPositive * n
+                    maxPositive = None
+                else:
+                    negative = n
+                if maxNegative:
+                    maxPositive = maxNegative * n
+                    ans = max(ans, maxPositive)
+                maxNegative = negative
+        return ans
+
+s = Solution()
+# print(s.maxProduct([-1, 2, 3, -5]))
+print(s.maxProduct([2,3,-2,4]))
